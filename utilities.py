@@ -1,10 +1,18 @@
-import random as rnd
 import numpy as np
-import tensorflow as tf
+import torch
 
-def preset_rng_tf(seed: int = 123) -> None:
-    """Preset tensorflow random number generator to given ``seed``."""
-    rnd.seed(seed)
-    np.random.seed(seed)
-    tf.random.set_seed(seed)
-    tf.experimental.numpy.random.seed(seed)
+
+# ---------------------------------------------------------------------------*/
+# - pytorch-based fully-connected neural network
+
+class fcnn(torch.nn.Module):
+    def __init__(self, features: list[int], activations) -> None:
+        super().__init__()
+
+        # use python's list comprehension to construct a fully-connected neural network with a one-liner
+        self._model = torch.nn.Sequential(*[
+            torch.nn.Sequential(*[
+                torch.nn.Linear(i, o, bias=a[1]), a[0]()]) for i, o, a in zip(features[:-1], features[1:], activations)])
+
+    def forward(self, domain: torch.Tensor) -> torch.Tensor:
+        return self._model(domain)
